@@ -1,5 +1,5 @@
 import { LDrawViewer } from './viewer/LDrawViewer';
-import { LLMClient } from './llm/client';
+import { LDRAW_SYSTEM_PROMPT, buildPrompt } from './llm/systemPrompt';
 
 // Sample LDraw model for testing
 const SAMPLE_LDRAW = `0 FILE sample.ldr
@@ -18,7 +18,6 @@ const SAMPLE_LDRAW = `0 FILE sample.ldr
 
 class App {
   private viewer: LDrawViewer | null = null;
-  private llmClient: LLMClient | null = null;
 
   // LDraw mode elements
   private ldrawSection: HTMLElement;
@@ -27,9 +26,9 @@ class App {
 
   // AI mode elements
   private aiSection: HTMLElement;
-  private apiKeyInput: HTMLInputElement;
   private aiPromptInput: HTMLTextAreaElement;
-  private generateBtn: HTMLButtonElement;
+  private copyPromptBtn: HTMLButtonElement;
+  private copyHint: HTMLElement;
 
   // Mode toggle
   private modeLdrawBtn: HTMLButtonElement;
@@ -61,9 +60,9 @@ class App {
 
     // AI section
     this.aiSection = document.getElementById('ai-section') as HTMLElement;
-    this.apiKeyInput = document.getElementById('api-key') as HTMLInputElement;
     this.aiPromptInput = document.getElementById('ai-prompt') as HTMLTextAreaElement;
-    this.generateBtn = document.getElementById('generate-btn') as HTMLButtonElement;
+    this.copyPromptBtn = document.getElementById('copy-prompt-btn') as HTMLButtonElement;
+    this.copyHint = document.getElementById('copy-hint') as HTMLElement;
 
     // Step controls
     this.stepControls = document.getElementById('step-controls') as HTMLElement;
@@ -86,9 +85,8 @@ class App {
     // Set up event listeners
     this.setupEventListeners();
 
-    // Load sample model and restore API key
+    // Load sample model
     this.textArea.value = SAMPLE_LDRAW;
-    this.restoreApiKey();
   }
 
   private setupEventListeners(): void {
@@ -99,13 +97,8 @@ class App {
     // Render button (LDraw mode)
     this.renderBtn.addEventListener('click', () => this.handleRender());
 
-    // Generate button (AI mode)
-    this.generateBtn.addEventListener('click', () => this.handleGenerate());
-
-    // Save API key when changed
-    this.apiKeyInput.addEventListener('change', () => {
-      localStorage.setItem('anthropic_api_key', this.apiKeyInput.value);
-    });
+    // Copy prompt button (AI mode)
+    this.copyPromptBtn.addEventListener('click', () => this.handleCopyPrompt());
 
     // Step navigation
     this.prevBtn.addEventListener('click', () => {
@@ -130,11 +123,7 @@ class App {
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       // Don't capture when typing in inputs
-      if (
-        e.target === this.textArea ||
-        e.target === this.aiPromptInput ||
-        e.target === this.apiKeyInput
-      ) {
+      if (e.target === this.textArea || e.target === this.aiPromptInput) {
         return;
       }
 
@@ -165,29 +154,6 @@ class App {
     }
   }
 
-  private restoreApiKey(): void {
-    // Priority: localStorage > environment variable
-    const savedKey = localStorage.getItem('anthropic_api_key');
-    const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-
-    if (savedKey) {
-      this.apiKeyInput.value = savedKey;
-    } else if (envKey) {
-      this.apiKeyInput.value = envKey;
-      this.apiKeyInput.placeholder = 'Using key from .env file';
-    }
-  }
-
-  private getApiKey(): string {
-    // Priority: input field > localStorage > environment variable
-    return (
-      this.apiKeyInput.value.trim() ||
-      localStorage.getItem('anthropic_api_key') ||
-      import.meta.env.VITE_ANTHROPIC_API_KEY ||
-      ''
-    );
-  }
-
   private async handleRender(): Promise<void> {
     const ldrawText = this.textArea.value.trim();
     if (!ldrawText) {
@@ -212,44 +178,31 @@ class App {
     }
   }
 
-  private async handleGenerate(): Promise<void> {
-    const apiKey = this.getApiKey();
-    if (!apiKey) {
-      this.showError('Please enter your Claude API key or set VITE_ANTHROPIC_API_KEY in .env');
-      return;
-    }
-
-    const prompt = this.aiPromptInput.value.trim();
-    if (!prompt) {
+  private async handleCopyPrompt(): Promise<void> {
+    const userPrompt = this.aiPromptInput.value.trim();
+    if (!userPrompt) {
       this.showError('Please describe what you want to build');
       return;
     }
 
     this.hideError();
-    this.showLoading('Generating LDraw code...');
-    this.generateBtn.disabled = true;
+
+    // Build the full prompt
+    const fullPrompt = `${LDRAW_SYSTEM_PROMPT}\n\n---\n\n${buildPrompt(userPrompt)}`;
 
     try {
-      // Create client and generate
-      this.llmClient = new LLMClient(apiKey);
-      const ldrawCode = await this.llmClient.generateLDraw(prompt);
+      await navigator.clipboard.writeText(fullPrompt);
 
-      // Show the generated code in the LDraw textarea
-      this.textArea.value = ldrawCode;
+      // Show success hint
+      this.copyHint.style.display = 'block';
+      this.copyPromptBtn.textContent = 'Copied!';
 
-      // Switch to LDraw mode and render
-      this.setMode('ldraw');
-      this.showLoading('Rendering model...');
-
-      await this.viewer?.loadFromText(ldrawCode);
-      this.stepControls.style.display = 'block';
+      // Reset button text after 2 seconds
+      setTimeout(() => {
+        this.copyPromptBtn.textContent = 'Copy Prompt for Claude';
+      }, 2000);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to generate model';
-      this.showError(message);
-      this.stepControls.style.display = 'none';
-    } finally {
-      this.hideLoading();
-      this.generateBtn.disabled = false;
+      this.showError('Failed to copy to clipboard');
     }
   }
 

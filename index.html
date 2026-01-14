@@ -27,16 +27,17 @@
         </div>
 
         <div class="input-section" id="ai-section" style="display: none;">
-          <label for="api-key">Claude API Key</label>
-          <input type="password" id="api-key" placeholder="sk-ant-..." />
-
           <label for="ai-prompt">Describe your LEGO build</label>
           <textarea
             id="ai-prompt"
             placeholder="Example: A small house with a red roof and blue door..."
             spellcheck="false"
           ></textarea>
-          <button id="generate-btn" type="button">Generate LDraw</button>
+          <button id="copy-prompt-btn" type="button">Copy Prompt for Claude</button>
+          <p class="hint" id="copy-hint" style="display: none;">
+            Prompt copied! Paste into <a href="https://claude.ai" target="_blank">claude.ai</a>,
+            then copy the LDraw response back into the "LDraw Code" tab.
+          </p>
         </div>
 
         <div class="step-controls" id="step-controls" style="display: none;">
