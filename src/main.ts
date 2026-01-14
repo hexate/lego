@@ -166,10 +166,26 @@ class App {
   }
 
   private restoreApiKey(): void {
+    // Priority: localStorage > environment variable
     const savedKey = localStorage.getItem('anthropic_api_key');
+    const envKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+
     if (savedKey) {
       this.apiKeyInput.value = savedKey;
+    } else if (envKey) {
+      this.apiKeyInput.value = envKey;
+      this.apiKeyInput.placeholder = 'Using key from .env file';
     }
+  }
+
+  private getApiKey(): string {
+    // Priority: input field > localStorage > environment variable
+    return (
+      this.apiKeyInput.value.trim() ||
+      localStorage.getItem('anthropic_api_key') ||
+      import.meta.env.VITE_ANTHROPIC_API_KEY ||
+      ''
+    );
   }
 
   private async handleRender(): Promise<void> {
@@ -197,9 +213,9 @@ class App {
   }
 
   private async handleGenerate(): Promise<void> {
-    const apiKey = this.apiKeyInput.value.trim();
+    const apiKey = this.getApiKey();
     if (!apiKey) {
-      this.showError('Please enter your Claude API key');
+      this.showError('Please enter your Claude API key or set VITE_ANTHROPIC_API_KEY in .env');
       return;
     }
 
