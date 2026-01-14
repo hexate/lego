@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LEGO Builder</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="sidebar">
+        <h1>LEGO Builder</h1>
+
+        <div class="input-section">
+          <label for="ldraw-input">LDraw Code</label>
+          <textarea
+            id="ldraw-input"
+            placeholder="Paste LDraw code here..."
+            spellcheck="false"
+          ></textarea>
+          <button id="render-btn" type="button">Render Model</button>
+        </div>
+
+        <div class="step-controls" id="step-controls" style="display: none;">
+          <div class="step-info">
+            <span>Step <span id="current-step">1</span> of <span id="total-steps">1</span></span>
+          </div>
+          <div class="step-buttons">
+            <button id="prev-step" type="button" disabled>← Previous</button>
+            <button id="next-step" type="button">Next →</button>
+          </div>
+        </div>
+
+        <div class="error-display" id="error-display" style="display: none;">
+          <p id="error-message"></p>
+        </div>
+      </div>
+
+      <div class="viewer-container">
+        <canvas id="viewer-canvas"></canvas>
+        <div class="loading" id="loading" style="display: none;">
+          <span>Loading model...</span>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,185 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+#app {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  width: 350px;
+  min-width: 350px;
+  padding: 20px;
+  background: #242424;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+.sidebar h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.input-section label {
+  font-size: 0.875rem;
+  color: #888;
+}
+
+#ldraw-input {
+  flex: 1;
+  min-height: 200px;
+  padding: 12px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #fff;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  resize: none;
+}
+
+#ldraw-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+#ldraw-input::placeholder {
+  color: #555;
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#render-btn {
+  background: #3b82f6;
+  color: #fff;
+}
+
+#render-btn:hover {
+  background: #2563eb;
+}
+
+#render-btn:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+.step-controls {
+  padding: 15px;
+  background: #1a1a1a;
+  border-radius: 6px;
+}
+
+.step-info {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.step-info span span {
+  color: #fff;
+  font-weight: 600;
+}
+
+.step-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.step-buttons button {
+  flex: 1;
+  background: #333;
+  color: #fff;
+}
+
+.step-buttons button:hover:not(:disabled) {
+  background: #444;
+}
+
+.step-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-display {
+  padding: 12px;
+  background: #451a1a;
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+}
+
+#error-message {
+  color: #fca5a5;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.viewer-container {
+  flex: 1;
+  position: relative;
+  background: #2a2a2a;
+}
+
+#viewer-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px 40px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: #888;
+}
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: 40vh;
+  }
+
+  .viewer-container {
+    min-height: 60vh;
+  }
+}
