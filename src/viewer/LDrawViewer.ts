@@ -57,9 +57,9 @@ export class LDrawViewer {
     const gridHelper = new THREE.GridHelper(400, 20, 0x444444, 0x333333);
     this.scene.add(gridHelper);
 
-    // LDraw Loader - use official LDraw parts library
+    // LDraw Loader - use Vite proxy to avoid CORS issues
     this.loader = new LDrawLoader();
-    this.loader.setPartsLibraryPath('https://library.ldraw.org/library/official/');
+    this.loader.setPartsLibraryPath('/ldraw/');
 
     // Handle resize
     window.addEventListener('resize', this.handleResize.bind(this));

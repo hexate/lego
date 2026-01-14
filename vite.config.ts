@@ -10,5 +10,12 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      '/ldraw': {
+        target: 'https://library.ldraw.org/library/official',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ldraw/, ''),
+      },
+    },
   },
 });
