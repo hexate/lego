@@ -11,7 +11,12 @@
       <div class="sidebar">
         <h1>LEGO Builder</h1>
 
-        <div class="input-section">
+        <div class="mode-toggle">
+          <button id="mode-ldraw" class="mode-btn active" type="button">LDraw Code</button>
+          <button id="mode-ai" class="mode-btn" type="button">Generate with AI</button>
+        </div>
+
+        <div class="input-section" id="ldraw-section">
           <label for="ldraw-input">LDraw Code</label>
           <textarea
             id="ldraw-input"
@@ -21,10 +26,24 @@
           <button id="render-btn" type="button">Render Model</button>
         </div>
 
+        <div class="input-section" id="ai-section" style="display: none;">
+          <label for="api-key">Claude API Key</label>
+          <input type="password" id="api-key" placeholder="sk-ant-..." />
+
+          <label for="ai-prompt">Describe your LEGO build</label>
+          <textarea
+            id="ai-prompt"
+            placeholder="Example: A small house with a red roof and blue door..."
+            spellcheck="false"
+          ></textarea>
+          <button id="generate-btn" type="button">Generate LDraw</button>
+        </div>
+
         <div class="step-controls" id="step-controls" style="display: none;">
           <div class="step-info">
             <span>Step <span id="current-step">1</span> of <span id="total-steps">1</span></span>
           </div>
+          <input type="range" id="step-slider" min="1" max="1" value="1" />
           <div class="step-buttons">
             <button id="prev-step" type="button" disabled>← Previous</button>
             <button id="next-step" type="button">Next →</button>
@@ -39,7 +58,7 @@
       <div class="viewer-container">
         <canvas id="viewer-canvas"></canvas>
         <div class="loading" id="loading" style="display: none;">
-          <span>Loading model...</span>
+          <span id="loading-text">Loading model...</span>
         </div>
       </div>
     </div>

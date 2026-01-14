@@ -155,8 +155,36 @@ export class LDrawViewer {
     if (!this.currentModel) return;
 
     this.currentModel.traverse((node) => {
+      // Handle group visibility
       if (node.isGroup && node.userData.buildingStep !== undefined) {
         node.visible = node.userData.buildingStep <= this.currentStep;
+      }
+
+      // Handle mesh highlighting for current step
+      if ((node as THREE.Mesh).isMesh) {
+        const mesh = node as THREE.Mesh;
+        const material = mesh.material as THREE.MeshStandardMaterial;
+
+        // Find the building step for this mesh by checking parent groups
+        let buildingStep: number | undefined;
+        let parent = mesh.parent;
+        while (parent) {
+          if (parent.userData.buildingStep !== undefined) {
+            buildingStep = parent.userData.buildingStep;
+            break;
+          }
+          parent = parent.parent;
+        }
+
+        if (buildingStep !== undefined && material && material.emissive) {
+          if (buildingStep === this.currentStep) {
+            // Highlight current step parts with emissive glow
+            material.emissive.setHex(0x222222);
+          } else {
+            // Reset emissive for other parts
+            material.emissive.setHex(0x000000);
+          }
+        }
       }
     });
   }
