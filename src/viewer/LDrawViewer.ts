@@ -11,6 +11,7 @@ export class LDrawViewer {
   private currentModel: THREE.Group | null = null;
   private currentStep = 0;
   private totalSteps = 0;
+  private materialsLoaded = false;
 
   private onStepChangeCallback: ((current: number, total: number) => void) | null = null;
 
@@ -91,6 +92,12 @@ export class LDrawViewer {
     if (this.currentModel) {
       this.scene.remove(this.currentModel);
       this.currentModel = null;
+    }
+
+    // Preload materials (color definitions) on first load
+    if (!this.materialsLoaded) {
+      await this.loader.preloadMaterials('/ldraw/LDConfig.ldr');
+      this.materialsLoaded = true;
     }
 
     // Create blob URL from text
