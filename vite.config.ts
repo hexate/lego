@@ -10,5 +10,12 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      '/ldraw-lib': {
+        target: 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/models/ldraw/officialLibrary',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ldraw-lib/, ''),
+      },
+    },
   },
 });
